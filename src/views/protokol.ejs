@@ -98,10 +98,10 @@
                 <% if (item.mergedPdf) { %>
                   <div class="mt-3 p-3 bg-success bg-opacity-10 rounded">
                     <h6 class="text-success mb-2">
-                      <i class="bi bi-check-circle-fill me-2"></i>PDF Gabungan Tersedia
+                      <i class="bi bi-check-circle-fill me-2"></i>File Dokumen Gabungan
                     </h6>
                     <a href="/uploads/<%= item.mergedPdf %>" target="_blank" class="btn btn-sm btn-success">
-                      <i class="bi bi-download me-1"></i>Download PDF Gabungan
+                      <i class="bi bi-download me-1"></i>Download File
                     </a>
                     <small class="text-muted ms-3">
                       <i class="bi bi-clock me-1"></i>
@@ -113,7 +113,7 @@
 
               <div class="mt-3 d-flex gap-2">
                 <button class="btn btn-sm btn-primary" onclick="window.mergePDFs(<%= item.id %>)" title="Gabungkan semua PDF menjadi satu file">
-                  <i class="bi bi-file-earmark-pdf-fill me-1"></i>Merge PDF
+                  <i class="bi bi-file-earmark-pdf-fill me-1"></i>Merge Dokumen
                 </button>
                 <button class="btn btn-sm btn-warning" onclick="window.editProtokol(<%= item.id %>)">
                   <i class="bi bi-pencil me-1"></i>Edit
