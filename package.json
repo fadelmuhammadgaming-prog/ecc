@@ -31,6 +31,8 @@
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.17.3",
     "multer": "^2.0.2",
+    "pdf-lib": "^1.17.1",
+    "pdf-merger-js": "^5.1.2",
     "pg": "^8.11.3"
   },
   "devDependencies": {

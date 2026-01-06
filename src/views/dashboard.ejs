@@ -44,7 +44,7 @@
     <div class="card border-0 shadow-sm">
       <div class="card-body">
         <h5 class="card-title mb-4"><i class="bi bi-cash-stack text-success"></i> Ringkasan Anggaran</h5>
-        <div class="row text-center">
+        <div class="row text-center mb-4">
           <div class="col-md-4">
             <div class="p-3 rounded" style="background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);">
               <h6 class="text-muted mb-2">Total Pagu</h6>
@@ -55,13 +55,47 @@
             <div class="p-3 rounded" style="background: linear-gradient(135deg, #f5576c20 0%, #f093fb20 100%);">
               <h6 class="text-muted mb-2">Total Realisasi</h6>
               <h3 class="text-danger mb-0">Rp <%= ((stats.totalRealisasi || 0) / 1000000000).toFixed(2) %> M</h3>
+              <div class="mt-2">
+                <span class="badge bg-danger"><%= stats.persenTerpakai %>% Terpakai</span>
+              </div>
             </div>
           </div>
           <div class="col-md-4">
             <div class="p-3 rounded" style="background: linear-gradient(135deg, #43e97b20 0%, #38f9d720 100%);">
               <h6 class="text-muted mb-2">Sisa Anggaran</h6>
               <h3 class="text-success mb-0">Rp <%= ((stats.totalSisa || 0) / 1000000000).toFixed(2) %> M</h3>
+              <div class="mt-2">
+                <span class="badge bg-success"><%= stats.persenSisa %>% Tersisa</span>
+              </div>
             </div>
+          </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="mt-4">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted"><i class="bi bi-graph-up"></i> Pemakaian Anggaran</span>
+            <span class="fw-bold text-primary"><%= stats.persenTerpakai %>%</span>
+          </div>
+          <div class="progress" style="height: 30px; border-radius: 10px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                 role="progressbar" 
+                 style="width: <%= stats.persenTerpakai %>%; background: linear-gradient(90deg, #f5576c 0%, #f093fb 100%);"
+                 aria-valuenow="<%= stats.persenTerpakai %>" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100">
+              <strong><%= stats.persenTerpakai %>% Terpakai</strong>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between mt-2">
+            <small class="text-danger">
+              <i class="bi bi-exclamation-circle"></i> 
+              Rp <%= ((stats.totalRealisasi || 0) / 1000000000).toFixed(2) %> M Terpakai
+            </small>
+            <small class="text-success">
+              <i class="bi bi-check-circle"></i> 
+              Rp <%= ((stats.totalSisa || 0) / 1000000000).toFixed(2) %> M Tersisa
+            </small>
           </div>
         </div>
       </div>
@@ -109,21 +143,32 @@
         <div class="list-group list-group-flush">
           <% if (suratList && suratList.length > 0) { %>
             <% suratList.slice(0, 5).forEach(item => { %>
-              <div class="list-group-item px-0 border-0 border-bottom">
+              <div class="list-group-item px-0 border-0 border-bottom py-3">
                 <div class="d-flex justify-content-between align-items-start">
-                  <div>
-                    <h6 class="mb-1"><%= item.jenis_surat %></h6>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="badge bg-primary me-2">
+                        <i class="bi bi-file-text"></i> <%= item.jenis_surat %>
+                      </span>
+                      <span class="badge <%= item.urgensi === 'URGENT' ? 'bg-danger' : item.urgensi === 'HIGH' ? 'bg-warning' : 'bg-info' %> me-2">
+                        <%= item.urgensi %>
+                      </span>
+                      <span class="badge <%= item.status_surat === 'APPROVED' ? 'bg-success' : item.status_surat === 'PENDING' ? 'bg-warning' : 'bg-secondary' %>">
+                        <%= item.status_surat %>
+                      </span>
+                    </div>
+                    <h6 class="mb-1">
+                      <i class="bi bi-hash text-muted"></i> 
+                      <strong><%= item.no_memo_surat %></strong>
+                    </h6>
                     <small class="text-muted">
-                      <i class="bi bi-hash"></i> <%= item.no_memo_surat %>
+                      <i class="bi bi-calendar3"></i> 
+                      <%= item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID', { 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric' 
+                      }) : '-' %>
                     </small>
-                  </div>
-                  <div>
-                    <span class="badge <%= item.urgensi === 'URGENT' ? 'bg-danger' : item.urgensi === 'HIGH' ? 'bg-warning' : 'bg-info' %> me-1">
-                      <%= item.urgensi %>
-                    </span>
-                    <span class="badge <%= item.status_surat === 'APPROVED' ? 'bg-success' : item.status_surat === 'PENDING' ? 'bg-warning' : 'bg-secondary' %>">
-                      <%= item.status_surat %>
-                    </span>
                   </div>
                 </div>
               </div>

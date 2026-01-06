@@ -91,6 +91,7 @@ export const protokol = pgTable('protokol', {
   uploadLaporan: varchar('upload_laporan', { length: 255 }), // Upload laporan kegiatan
   uploadSppdFinal: varchar('upload_sppd_final', { length: 255 }), // Upload SPPD final
   uploadBoardingPass: varchar('upload_boarding_pass', { length: 255 }), // Upload boarding pass
+  mergedPdf: varchar('merged_pdf', { length: 255 }), // Merged PDF dari semua upload
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

@@ -53,6 +53,10 @@ router.get('/', async (req, res) => {
       totalSisa: await db.select({ sum: sql`COALESCE(SUM(${anggaran.sisa}), 0)` }).from(anggaran).then(r => Number(r[0].sum) || 0),
     };
     
+    // Calculate percentages
+    stats.persenTerpakai = stats.totalPagu > 0 ? ((stats.totalRealisasi / stats.totalPagu) * 100).toFixed(2) : 0;
+    stats.persenSisa = stats.totalPagu > 0 ? ((stats.totalSisa / stats.totalPagu) * 100).toFixed(2) : 0;
+    
     const agendaList = await db.select().from(agenda).orderBy(descOrder(agenda.tanggal)).limit(5);
     const suratList = await db.select().from(surat).orderBy(descOrder(surat.createdAt)).limit(5);
     

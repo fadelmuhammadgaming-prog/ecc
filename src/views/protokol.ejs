@@ -93,10 +93,29 @@
                     </ul>
                   </div>
                 </div>
+                
+                <!-- Merged PDF Section -->
+                <% if (item.mergedPdf) { %>
+                  <div class="mt-3 p-3 bg-success bg-opacity-10 rounded">
+                    <h6 class="text-success mb-2">
+                      <i class="bi bi-check-circle-fill me-2"></i>PDF Gabungan Tersedia
+                    </h6>
+                    <a href="/uploads/<%= item.mergedPdf %>" target="_blank" class="btn btn-sm btn-success">
+                      <i class="bi bi-download me-1"></i>Download PDF Gabungan
+                    </a>
+                    <small class="text-muted ms-3">
+                      <i class="bi bi-clock me-1"></i>
+                      <%= item.mergedPdf.includes('-') ? 'Terakhir dibuat: ' + new Date(parseInt(item.mergedPdf.split('-').pop().replace('.pdf', ''))).toLocaleString('id-ID') : '' %>
+                    </small>
+                  </div>
+                <% } %>
               </div>
 
-              <div class="mt-3">
-                <button class="btn btn-sm btn-warning me-2" onclick="window.editProtokol(<%= item.id %>)">
+              <div class="mt-3 d-flex gap-2">
+                <button class="btn btn-sm btn-primary" onclick="window.mergePDFs(<%= item.id %>)" title="Gabungkan semua PDF menjadi satu file">
+                  <i class="bi bi-file-earmark-pdf-fill me-1"></i>Merge PDF
+                </button>
+                <button class="btn btn-sm btn-warning" onclick="window.editProtokol(<%= item.id %>)">
                   <i class="bi bi-pencil me-1"></i>Edit
                 </button>
                 <button class="btn btn-sm btn-danger" onclick="window.deleteProtokol(<%= item.id %>)">
@@ -403,6 +422,57 @@ window.deleteProtokol = async function(id) {
   } catch (error) {
     console.error('Error:', error);
     alert('Terjadi kesalahan saat menghapus protokol');
+  }
+};
+
+// Merge PDFs function
+window.mergePDFs = async function(id) {
+  if (!confirm('Gabungkan semua dokumen yang sudah di-upload menjadi satu file PDF?\n\nFile yang akan digabungkan:\n- Disposisi\n- Etiket\n- Materi\n- Dokumentasi\n- Laporan\n- SPPD Final\n- Boarding Pass\n\nCatatan:\n✓ Mendukung PDF dan gambar (PNG/JPG)\n✓ Gambar akan otomatis dikonversi ke PDF\n✓ Hanya file yang sudah di-upload yang akan digabungkan')) {
+    return;
+  }
+  
+  try {
+    // Show loading indicator
+    const button = event.target.closest('button');
+    const originalHTML = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Merging...';
+    
+    // Call merge API
+    const response = await fetch(`/api/protokol/${id}/merge-pdf`, {
+      method: 'POST',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
+    
+    const result = await response.json();
+    
+    // Restore button
+    button.disabled = false;
+    button.innerHTML = originalHTML;
+    
+    if (response.ok && result.success) {
+      const filesList = result.data.filesMerged ? result.data.filesMerged.join('\n- ') : '';
+      alert(`✅ PDF berhasil digabungkan!\n\nFile digabung:\n- ${filesList}\n\nTotal: ${result.data.filesCount} file PDF\n\nFile hasil: ${result.data.mergedFilename}`);
+      
+      // Reload to show updated data with merged PDF section
+      window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
+    } else {
+      alert('❌ Error: ' + (result.error || 'Gagal menggabungkan PDF') + 
+            (result.details ? '\n\n' + result.details : ''));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('❌ Terjadi kesalahan saat menggabungkan PDF: ' + error.message);
+    
+    // Restore button
+    const button = event.target.closest('button');
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-file-earmark-pdf-fill me-1"></i>Merge PDF';
+    }
   }
 };
 </script>

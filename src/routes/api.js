@@ -4,6 +4,7 @@ import { users, agenda, surat, contact, anggaran, protokol } from '../db/schema.
 import { eq, desc, sql } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { upload } from '../config/upload.js';
+import { mergeProtokolPDFs, getProtkolPDFStatus } from '../utils/pdfMerger.js';
 
 const router = express.Router();
 
@@ -840,6 +841,120 @@ router.get('/dashboard/stats', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ==================== PROTOKOL PDF MERGE ====================
+
+// Get PDF merge status for a protokol
+router.get('/protokol/:id/pdf-status', async (req, res) => {
+  try {
+    const protokolId = parseInt(req.params.id);
+    
+    // Get protokol record
+    const protokolRecord = await db.select()
+      .from(protokol)
+      .where(eq(protokol.id, protokolId))
+      .limit(1);
+    
+    if (protokolRecord.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Protokol tidak ditemukan' 
+      });
+    }
+    
+    // Get PDF status
+    const status = getProtkolPDFStatus(protokolRecord[0]);
+    
+    res.json({ 
+      success: true, 
+      data: {
+        protokolId,
+        agendaDinas: protokolRecord[0].agendaDinas,
+        ...status
+      }
+    });
+  } catch (error) {
+    console.error('❌ Get PDF Status Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
+// Merge all PDFs for a protokol
+router.post('/protokol/:id/merge-pdf', async (req, res) => {
+  try {
+    const protokolId = parseInt(req.params.id);
+    
+    console.log(`\n🔄 === MERGE PDF REQUEST ===`);
+    console.log(`📋 Protokol ID: ${protokolId}`);
+    
+    // Get protokol record
+    const protokolRecord = await db.select()
+      .from(protokol)
+      .where(eq(protokol.id, protokolId))
+      .limit(1);
+    
+    if (protokolRecord.length === 0) {
+      console.log(`❌ Protokol ID ${protokolId} not found`);
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Protokol tidak ditemukan' 
+      });
+    }
+    
+    const protokolData = protokolRecord[0];
+    console.log(`📄 Agenda: ${protokolData.agendaDinas}`);
+    
+    // Check if there are PDFs to merge
+    const status = getProtkolPDFStatus(protokolData);
+    console.log(`📊 PDF Status:`, status);
+    
+    if (!status.canMerge) {
+      console.log(`⚠️  No PDFs available to merge`);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Tidak ada file PDF yang dapat digabungkan',
+        details: `Ditemukan ${status.available} dari ${status.total} file PDF`
+      });
+    }
+    
+    // Merge PDFs
+    console.log(`📄 Starting merge of ${status.available} PDF files...`);
+    const mergedFilename = await mergeProtokolPDFs(protokolData);
+    
+    // Update protokol record with merged PDF filename
+    await db.update(protokol)
+      .set({ 
+        mergedPdf: mergedFilename,  // ✅ Use dedicated mergedPdf field
+        updatedAt: new Date()
+      })
+      .where(eq(protokol.id, protokolId));
+    
+    console.log(`✅ PDFs merged successfully: ${mergedFilename}`);
+    console.log(`=== MERGE COMPLETE ===\n`);
+    
+    res.json({ 
+      success: true, 
+      message: `Berhasil menggabungkan ${status.available} file PDF`,
+      data: {
+        protokolId,
+        agendaDinas: protokolData.agendaDinas,
+        mergedFilename,
+        filesCount: status.available,
+        filesMerged: status.files.map(f => f.name),
+        downloadUrl: `/uploads/${mergedFilename}`
+      }
+    });
+  } catch (error) {
+    console.error('❌ Merge PDF Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message || 'Gagal menggabungkan PDF'
+    });
   }
 });
 
