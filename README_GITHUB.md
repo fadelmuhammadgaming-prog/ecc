@@ -15,6 +15,7 @@
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [Running the Application](#running-the-application)
+- [Deployment](#deployment)
 - [Project Structure](#project-structure)
 - [API Documentation](#api-documentation)
 - [Screenshots](#screenshots)
@@ -170,7 +171,48 @@ npm start
 
 The application will be available at: **http://localhost:3000**
 
-## 📁 Project Structure
+## � Deployment
+
+### Deploy to Render.com (FREE)
+
+This application is ready to deploy to Render.com with zero configuration!
+
+#### Quick Deploy (10 minutes):
+1. Read: [`QUICK_DEPLOY.md`](QUICK_DEPLOY.md) - Fast deployment guide
+2. Or: [`DEPLOYMENT_RENDER.md`](DEPLOYMENT_RENDER.md) - Detailed guide
+3. Or: [`VISUAL_DEPLOY_GUIDE.md`](VISUAL_DEPLOY_GUIDE.md) - Visual guide
+
+#### What's Included:
+- ✅ `render.yaml` - Auto-configuration
+- ✅ PostgreSQL database setup
+- ✅ SSL certificate (automatic)
+- ✅ Auto-deploy from GitHub
+- ✅ Environment variables template
+
+#### Cost:
+- **FREE Tier:** PostgreSQL + Web Service = $0/month
+- **Paid Tier:** Always-on service = $14/month (optional)
+
+#### Live Demo:
+After deployment, your app will be available at:
+- `https://ecc-app.onrender.com` (or your custom name)
+
+### Other Deployment Options:
+
+#### Railway.app
+- Similar to Render
+- $5/month free credit
+- Better performance
+- Guide: Similar steps as Render
+
+#### Vercel + Supabase
+- Vercel for app hosting
+- Supabase for PostgreSQL
+- Both have generous free tiers
+
+**📚 Full deployment documentation available in the deployment guides!**
+
+## �📁 Project Structure
 
 \`\`\`
 ecc/
