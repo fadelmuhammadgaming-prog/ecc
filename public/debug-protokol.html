@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Protokol</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        pre { background: #f5f5f5; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Debug Protokol View</h1>
+    <div id="status"></div>
+    <hr>
+    
+    <h2>Test 1: API Endpoint</h2>
+    <button onclick="testAPI()">Test API /api/protokol</button>
+    <pre id="api-result"></pre>
+    
+    <h2>Test 2: Page Load</h2>
+    <button onclick="testPage()">Test Page /protokol</button>
+    <pre id="page-result"></pre>
+    
+    <h2>Test 3: Check Login</h2>
+    <button onclick="checkLogin()">Check Login Status</button>
+    <pre id="login-result"></pre>
+    
+    <script>
+        async function testAPI() {
+            const result = document.getElementById('api-result');
+            result.textContent = 'Loading...';
+            
+            try {
+                const res = await fetch('/api/protokol');
+                const data = await res.json();
+                result.textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success && data.data.length > 0) {
+                    result.style.color = 'green';
+                } else {
+                    result.style.color = 'orange';
+                }
+            } catch (err) {
+                result.textContent = 'ERROR: ' + err.message;
+                result.style.color = 'red';
+            }
+        }
+        
+        async function testPage() {
+            const result = document.getElementById('page-result');
+            result.textContent = 'Loading...';
+            
+            try {
+                const res = await fetch('/protokol');
+                const html = await res.text();
+                
+                // Check if HTML contains data
+                const hasCards = html.includes('card-body');
+                const hasNoData = html.includes('Belum ada data');
+                const hasProtokol = html.includes('agendaDinas') || html.includes('Kunjungan');
+                
+                result.textContent = 
+                    'Status: ' + res.status + '\n' +
+                    'Has Cards: ' + hasCards + '\n' +
+                    'Has No Data Message: ' + hasNoData + '\n' +
+                    'Has Protokol Data: ' + hasProtokol + '\n\n' +
+                    'HTML Length: ' + html.length + ' chars\n\n' +
+                    'First 500 chars:\n' + html.substring(0, 500);
+                    
+                if (res.status === 200 && hasProtokol) {
+                    result.style.color = 'green';
+                } else {
+                    result.style.color = 'orange';
+                }
+            } catch (err) {
+                result.textContent = 'ERROR: ' + err.message;
+                result.style.color = 'red';
+            }
+        }
+        
+        async function checkLogin() {
+            const result = document.getElementById('login-result');
+            result.textContent = 'Checking...';
+            
+            try {
+                const res = await fetch('/api/users');
+                if (res.status === 401 || res.redirected) {
+                    result.textContent = 'NOT LOGGED IN - Need to login first!';
+                    result.style.color = 'red';
+                } else {
+                    result.textContent = 'LOGGED IN - Status: ' + res.status;
+                    result.style.color = 'green';
+                }
+            } catch (err) {
+                result.textContent = 'ERROR: ' + err.message;
+                result.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>

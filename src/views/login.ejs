@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Executive Command Center</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-container {
+      max-width: 450px;
+      width: 100%;
+      padding: 20px;
+    }
+    
+    .login-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 40px;
+      animation: slideUp 0.5s ease;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .logo-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    
+    .logo-icon i {
+      font-size: 3rem;
+      color: white;
+    }
+    
+    .login-card h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .login-card p {
+      text-align: center;
+      color: #6c757d;
+      margin-bottom: 30px;
+    }
+    
+    .form-control {
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .input-group-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px 0 0 10px;
+      padding: 0 15px;
+    }
+    
+    .btn-login {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: white;
+      width: 100%;
+      transition: all 0.3s;
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
+    
+    .alert {
+      border-radius: 10px;
+      border: none;
+    }
+    
+    .credentials-hint {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+    
+    .credentials-hint small {
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    .role-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo-section">
+        <div class="logo-icon">
+          <i class="bi bi-buildings-fill"></i>
+        </div>
+        <h2>Executive Command Center</h2>
+        <p>Silakan login untuk melanjutkan</p>
+      </div>
+      
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form id="loginForm" action="/login" method="POST">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-person-fill"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="username" 
+              name="username" 
+              placeholder="Masukkan username"
+              required
+              autofocus
+            >
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-lock-fill"></i>
+            </span>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="password" 
+              name="password" 
+              placeholder="Masukkan password"
+              required
+            >
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-login">
+          <i class="bi bi-box-arrow-in-right me-2"></i>
+          Login
+        </button>
+      </form>
+      
+      <div class="credentials-hint">
+        <small class="text-muted"><strong>Demo Credentials:</strong></small>
+        <div class="mt-2">
+          <span class="role-badge" style="background: #667eea; color: white;">Sekretaris</span>
+          <small class="text-muted">sekretaris1 / password123</small>
+        </div>
+        <div class="mt-1">
+          <span class="role-badge" style="background: #28a745; color: white;">Protokoler</span>
+          <small class="text-muted">protokoler1 / password123</small>
+        </div>
+        <div class="mt-1">
+          <span class="role-badge" style="background: #ffc107; color: black;">Direksi</span>
+          <small class="text-muted">direksi1 / password123</small>
+        </div>
+        <div class="mt-1">
+          <span class="role-badge" style="background: #17a2b8; color: white;">PA</span>
+          <small class="text-muted">pa1 / password123</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const submitBtn = this.querySelector('button[type="submit"]');
+      
+      // Disable button
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Loading...';
+      
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ username, password }),
+          credentials: 'same-origin' // Include cookies/session
+        });
+        
+        // Check content type before parsing
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Server tidak mengembalikan JSON. Mungkin ada error di server.');
+        }
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+          // Success - redirect to dashboard
+          window.location.href = '/';
+        } else {
+          // Show error
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Login';
+          
+          // Show error message
+          const existingAlert = document.querySelector('.alert');
+          if (existingAlert) {
+            existingAlert.remove();
+          }
+          
+          const alert = document.createElement('div');
+          alert.className = 'alert alert-danger';
+          alert.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i>${data.error || 'Login gagal'}`;
+          document.getElementById('loginForm').insertAdjacentElement('beforebegin', alert);
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Login';
+        
+        // Show error message
+        const existingAlert = document.querySelector('.alert');
+        if (existingAlert) {
+          existingAlert.remove();
+        }
+        
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger';
+        alert.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i>${error.message}`;
+        document.getElementById('loginForm').insertAdjacentElement('beforebegin', alert);
+      }
+    });
+  </script>
+</body>
+</html>

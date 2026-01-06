@@ -1,0 +1,40 @@
+{
+  "name": "ecc-fullstack-app",
+  "version": "1.0.0",
+  "description": "Fullstack application with Express.js, Bootstrap 5, PostgreSQL, and Drizzle ORM",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:migrate": "node src/db/migrate.js",
+    "db:push": "drizzle-kit push:pg",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "node src/db/seed.js"
+  },
+  "keywords": [
+    "express",
+    "postgresql",
+    "drizzle",
+    "bootstrap"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.29.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.17.3",
+    "multer": "^2.0.2",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.6",
+    "nodemon": "^3.0.2"
+  }
+}

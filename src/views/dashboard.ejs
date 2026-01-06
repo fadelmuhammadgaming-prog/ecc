@@ -1,0 +1,139 @@
+<div class="page-header">
+  <h1><i class="bi bi-speedometer2"></i> Dashboard Executive</h1>
+  <p>Monitoring dan Statistik Perjalanan Dinas Direksi</p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <div class="icon"><i class="bi bi-calendar-event"></i></div>
+      <h3><%= stats.totalAgenda || 0 %></h3>
+      <p>Total Agenda</p>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+      <div class="icon"><i class="bi bi-envelope-fill"></i></div>
+      <h3><%= stats.totalSurat || 0 %></h3>
+      <p>Total Surat</p>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+      <div class="icon"><i class="bi bi-person-lines-fill"></i></div>
+      <h3><%= stats.totalContact || 0 %></h3>
+      <p>Total Kontak</p>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+      <div class="icon"><i class="bi bi-people-fill"></i></div>
+      <h3><%= stats.totalUsers || 0 %></h3>
+      <p>Total Users</p>
+    </div>
+  </div>
+</div>
+
+<!-- Budget Overview -->
+<div class="row g-4 mb-4">
+  <div class="col-md-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-4"><i class="bi bi-cash-stack text-success"></i> Ringkasan Anggaran</h5>
+        <div class="row text-center">
+          <div class="col-md-4">
+            <div class="p-3 rounded" style="background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);">
+              <h6 class="text-muted mb-2">Total Pagu</h6>
+              <h3 class="text-primary mb-0">Rp <%= ((stats.totalPagu || 0) / 1000000000).toFixed(2) %> M</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded" style="background: linear-gradient(135deg, #f5576c20 0%, #f093fb20 100%);">
+              <h6 class="text-muted mb-2">Total Realisasi</h6>
+              <h3 class="text-danger mb-0">Rp <%= ((stats.totalRealisasi || 0) / 1000000000).toFixed(2) %> M</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded" style="background: linear-gradient(135deg, #43e97b20 0%, #38f9d720 100%);">
+              <h6 class="text-muted mb-2">Sisa Anggaran</h6>
+              <h3 class="text-success mb-0">Rp <%= ((stats.totalSisa || 0) / 1000000000).toFixed(2) %> M</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-4"><i class="bi bi-clock-history text-primary"></i> Agenda Terbaru</h5>
+        <div class="list-group list-group-flush">
+          <% if (agendaList && agendaList.length > 0) { %>
+            <% agendaList.slice(0, 5).forEach(item => { %>
+              <div class="list-group-item px-0 border-0 border-bottom">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="mb-1"><%= item.kegiatan %></h6>
+                    <small class="text-muted">
+                      <i class="bi bi-calendar3"></i> <%= new Date(item.tanggal).toLocaleDateString('id-ID') %>
+                      <i class="bi bi-clock ms-2"></i> <%= item.waktu %>
+                    </small>
+                  </div>
+                  <span class="badge <%= item.status === 'ON SCHEDULE' ? 'bg-success' : item.status === 'DELAYED' ? 'bg-warning' : 'bg-secondary' %>">
+                    <%= item.status %>
+                  </span>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p class="text-muted text-center py-3">Belum ada agenda</p>
+          <% } %>
+        </div>
+        <a href="/agenda" class="btn btn-primary btn-sm mt-3 w-100">Lihat Semua Agenda</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-4"><i class="bi bi-envelope text-danger"></i> Surat Terbaru</h5>
+        <div class="list-group list-group-flush">
+          <% if (suratList && suratList.length > 0) { %>
+            <% suratList.slice(0, 5).forEach(item => { %>
+              <div class="list-group-item px-0 border-0 border-bottom">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="mb-1"><%= item.jenis_surat %></h6>
+                    <small class="text-muted">
+                      <i class="bi bi-hash"></i> <%= item.no_memo_surat %>
+                    </small>
+                  </div>
+                  <div>
+                    <span class="badge <%= item.urgensi === 'URGENT' ? 'bg-danger' : item.urgensi === 'HIGH' ? 'bg-warning' : 'bg-info' %> me-1">
+                      <%= item.urgensi %>
+                    </span>
+                    <span class="badge <%= item.status_surat === 'APPROVED' ? 'bg-success' : item.status_surat === 'PENDING' ? 'bg-warning' : 'bg-secondary' %>">
+                      <%= item.status_surat %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p class="text-muted text-center py-3">Belum ada surat</p>
+          <% } %>
+        </div>
+        <a href="/surat" class="btn btn-primary btn-sm mt-3 w-100">Lihat Semua Surat</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+# Executive Commamd Center (ECC) Application Summary
+
+## 🎯 Application Purpose
+Monitoring Perjalanan Dinas Direksi
+
+## 📊 Core Features
+
+### 1. Login
+- Sekretaris, Protokoler, Direksi, PA
+
+
+### 2. Main Dashboard
+- Persen Anggaran Direksi terpakai
+- Agenda Hari Ini
+- Aktif Kegiatan Dinas
+- Status Surat Mendesak
+- List Agenda Direksi
+- List Status Surat
+- List Anggaran Direksi
+
+
+### 3. Agenda
+- CRUD Agenda 
+
+### 4. Surat
+- CRUD Surat
+
+### 5. Contact
+- CRUD Contact
+
+### 5. Anggaran Direksi
+- CRUD Anggaran
+
+## 6. Protokol
+- CRUD Protokol
+
+
+## 📊 Database Schema
+
+### 1. Login 
+USERNAME
+PASSWORD
+EMAIL
+NAMA
+DIVISI
+JOB TITLE
+ROLE (SEKRETARIS, PROTOKOLER, DIREKSI, PA)
+
+### 2. Agenda 
+TANGGAL
+WAKTU
+AGENDA / KEGIATAN
+LOKASI
+PESERTA INTERNAL
+PESERTA EXTERNAL 
+STATUS (ON SCHEDULE, PENDING, CANCEL)
+
+### 3. Surat 
+ID SURAT
+KODE USER
+NAMA USER
+TGL REKAM
+JENIS SURAT (DROPDOWN)
+  - BERITA ACARA
+  - BERITA ACARA (EXTERNAL)
+  - MEMO EXTERNAL
+  - MEMO INTERNAL
+  - SURAT BIASA
+  - SURAT RAHASIA
+  - SURAT RAHASIA PERSONAL
+NO MEMO SURAT
+STATUS SURAT (DROPDOWN)
+  - ON PROGRESS
+  - BELUM
+  - DONE
+URGENSI (DROPDOWN)
+  - BIASA
+  - PENTING 
+  - MENDESAK
+UPLOAD SURAT  
+
+  ### 4. Contact 
+NAMA
+INSTANSI
+JABATAN
+NO TELEPON
+
+  ### 5. Anggaran 
+MATA ANGGARAN
+PAGU
+REALISASI
+SISA
+
+  ### 5. Protokol 
+KODE USER
+NAMA USER
+TANGGAL REKAM
+UPLOAD DISPOSISI SURAT
+AGENDA DINAS
+TGL KEGIATAN
+NAMA KEGIATAN
+CHECKLIST KEBUTUHAN KEGIATAN 
+NO SPPD
+UPLOAD MATERI KEGIATAN
+MONITORING PELAKSANAAN
+UPLOAD DOKUMENTASI KEGIATAN
+UPLOAD LAPORAN KEGIATAN 
+UPLOAD SPPD FINAL
+UPLOAD BOARDING PASS
+
+UNTUK FITUR UPLOAD NAMA FILE DI SIMPAN DI DATABASE, FILE NYA SIMPAN DI APLIKASI.

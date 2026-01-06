@@ -1,0 +1,408 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">
+      <i class="bi bi-file-earmark-text me-2"></i>Protokol
+    </h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProtokolModal">
+      <i class="bi bi-plus-circle me-2"></i>Tambah Protokol
+    </button>
+  </div>
+
+  <!-- Display Protokol Cards -->
+  <div class="row" id="protokolList">
+    <% if (protokols && protokols.length > 0) { %>
+      <% protokols.forEach(item => { %>
+        <div class="col-12 mb-3">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <h5 class="card-title text-primary"><%= item.agendaDinas %></h5>
+                  <p class="mb-2"><strong>Nama User:</strong> <%= item.namaUser %></p>
+                  <p class="mb-2"><strong>Tanggal Kegiatan:</strong> <%= item.tglKegiatan ? new Date(item.tglKegiatan).toLocaleDateString('id-ID') : '-' %></p>
+                  <p class="mb-2"><strong>No SPPD:</strong> <%= item.noSppd || '-' %></p>
+                  <p class="mb-2"><strong>Tanggal Rekam:</strong> <%= item.tanggalRekam ? new Date(item.tanggalRekam).toLocaleString('id-ID') : '-' %></p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-2"><strong>Checklist Kebutuhan:</strong></p>
+                  <p class="text-muted small"><%= item.checklistKebutuhan || '-' %></p>
+                  <p class="mb-2"><strong>Monitoring Pelaksanaan:</strong></p>
+                  <p class="text-muted small"><%= item.monitoringPelaksanaan || '-' %></p>
+                </div>
+              </div>
+              
+              <!-- Document List -->
+              <div class="mt-3">
+                <h6 class="text-secondary">Dokumen:</h6>
+                <div class="row">
+                  <div class="col-md-6">
+                    <ul class="list-unstyled small">
+                      <li><i class="bi bi-file-earmark-pdf me-1"></i> Disposisi: 
+                        <% if (item.uploadDisposisi) { %>
+                          <a href="/uploads/<%= item.uploadDisposisi %>" target="_blank">Lihat</a>
+                        <% } else { %>
+                          <span class="text-muted">-</span>
+                        <% } %>
+                      </li>
+                      <li><i class="bi bi-file-earmark-pdf me-1"></i> Etiket: 
+                        <% if (item.uploadEtiket) { %>
+                          <a href="/uploads/<%= item.uploadEtiket %>" target="_blank">Lihat</a>
+                        <% } else { %>
+                          <span class="text-muted">-</span>
+                        <% } %>
+                      </li>
+                      <li><i class="bi bi-file-earmark-pdf me-1"></i> Materi: 
+                        <% if (item.uploadMateri) { %>
+                          <a href="/uploads/<%= item.uploadMateri %>" target="_blank">Lihat</a>
+                        <% } else { %>
+                          <span class="text-muted">-</span>
+                        <% } %>
+                      </li>
+                      <li><i class="bi bi-file-earmark-pdf me-1"></i> Dokumentasi: 
+                        <% if (item.uploadDokumentasi) { %>
+                          <a href="/uploads/<%= item.uploadDokumentasi %>" target="_blank">Lihat</a>
+                        <% } else { %>
+                          <span class="text-muted">-</span>
+                        <% } %>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-6">
+                    <ul class="list-unstyled small">
+                      <li><i class="bi bi-file-earmark-pdf me-1"></i> Laporan: 
+                        <% if (item.uploadLaporan) { %>
+                          <a href="/uploads/<%= item.uploadLaporan %>" target="_blank">Lihat</a>
+                        <% } else { %>
+                          <span class="text-muted">-</span>
+                        <% } %>
+                      </li>
+                      <li><i class="bi bi-file-earmark-pdf me-1"></i> SPPD Final: 
+                        <% if (item.uploadSppdFinal) { %>
+                          <a href="/uploads/<%= item.uploadSppdFinal %>" target="_blank">Lihat</a>
+                        <% } else { %>
+                          <span class="text-muted">-</span>
+                        <% } %>
+                      </li>
+                      <li><i class="bi bi-file-earmark-pdf me-1"></i> Boarding Pass: 
+                        <% if (item.uploadBoardingPass) { %>
+                          <a href="/uploads/<%= item.uploadBoardingPass %>" target="_blank">Lihat</a>
+                        <% } else { %>
+                          <span class="text-muted">-</span>
+                        <% } %>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button class="btn btn-sm btn-warning me-2" onclick="window.editProtokol(<%= item.id %>)">
+                  <i class="bi bi-pencil me-1"></i>Edit
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="window.deleteProtokol(<%= item.id %>)">
+                  <i class="bi bi-trash me-1"></i>Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="col-12">
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle me-2"></i>Belum ada data protokol.
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Modal Tambah Protokol -->
+<div class="modal fade" id="addProtokolModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Protokol Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addProtokolForm">
+          <div class="row">
+            <!-- Column 1 -->
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Agenda Dinas <span class="text-danger">*</span></label>
+                <textarea class="form-control" name="agendaDinas" rows="3" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Tanggal Kegiatan <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" name="tglKegiatan" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">No SPPD</label>
+                <input type="text" class="form-control" name="noSppd">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Checklist Kebutuhan</label>
+                <textarea class="form-control" name="checklistKebutuhan" rows="3"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Monitoring Pelaksanaan</label>
+                <textarea class="form-control" name="monitoringPelaksanaan" rows="3"></textarea>
+              </div>
+            </div>
+
+            <!-- Column 2 - File Uploads -->
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Upload Disposisi</label>
+                <input type="file" class="form-control" name="uploadDisposisi" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <small class="text-muted">Format: PDF, DOC, DOCX, JPG, PNG (Max 10MB)</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Etiket</label>
+                <input type="file" class="form-control" name="uploadEtiket" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Materi</label>
+                <input type="file" class="form-control" name="uploadMateri" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Dokumentasi</label>
+                <input type="file" class="form-control" name="uploadDokumentasi" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Laporan</label>
+                <input type="file" class="form-control" name="uploadLaporan" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload SPPD Final</label>
+                <input type="file" class="form-control" name="uploadSppdFinal" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Boarding Pass</label>
+                <input type="file" class="form-control" name="uploadBoardingPass" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="window.saveProtokol()">
+          <i class="bi bi-save me-1"></i>Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit Protokol -->
+<div class="modal fade" id="editProtokolModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Protokol</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editProtokolForm">
+          <input type="hidden" id="editProtokolId" name="id">
+          <div class="row">
+            <!-- Column 1 -->
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Agenda Dinas <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="editAgendaDinas" name="agendaDinas" rows="3" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Tanggal Kegiatan <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="editTglKegiatan" name="tglKegiatan" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">No SPPD</label>
+                <input type="text" class="form-control" id="editNoSppd" name="noSppd">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Checklist Kebutuhan</label>
+                <textarea class="form-control" id="editChecklistKebutuhan" name="checklistKebutuhan" rows="3"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Monitoring Pelaksanaan</label>
+                <textarea class="form-control" id="editMonitoringPelaksanaan" name="monitoringPelaksanaan" rows="3"></textarea>
+              </div>
+            </div>
+
+            <!-- Column 2 - File Uploads (Optional) -->
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Upload Disposisi (Optional - Kosongkan jika tidak ingin mengubah)</label>
+                <input type="file" class="form-control" name="uploadDisposisi" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <small class="text-muted" id="currentDisposisi"></small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Etiket (Optional)</label>
+                <input type="file" class="form-control" name="uploadEtiket" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <small class="text-muted" id="currentEtiket"></small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Materi (Optional)</label>
+                <input type="file" class="form-control" name="uploadMateri" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <small class="text-muted" id="currentMateri"></small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Dokumentasi (Optional)</label>
+                <input type="file" class="form-control" name="uploadDokumentasi" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <small class="text-muted" id="currentDokumentasi"></small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Laporan (Optional)</label>
+                <input type="file" class="form-control" name="uploadLaporan" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <small class="text-muted" id="currentLaporan"></small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload SPPD Final (Optional)</label>
+                <input type="file" class="form-control" name="uploadSppdFinal" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <small class="text-muted" id="currentSppdFinal"></small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Boarding Pass (Optional)</label>
+                <input type="file" class="form-control" name="uploadBoardingPass" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <small class="text-muted" id="currentBoardingPass"></small>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="window.updateProtokol()">
+          <i class="bi bi-save me-1"></i>Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Save Protokol
+window.saveProtokol = async function() {
+  try {
+    const form = document.getElementById('addProtokolForm');
+    const formData = new FormData(form);
+    
+    const response = await fetch('/api/protokol', {
+      method: 'POST',
+      body: formData
+      // No Content-Type header - browser sets it with boundary
+    });
+    
+    if (response.ok) {
+      alert('Protokol berhasil ditambahkan!');
+      bootstrap.Modal.getInstance(document.getElementById('addProtokolModal')).hide();
+      form.reset();
+      // Force reload without cache
+      window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
+    } else {
+      const error = await response.json();
+      alert('Error: ' + (error.message || 'Gagal menambahkan protokol'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan saat menambahkan protokol');
+  }
+};
+
+// Edit Protokol
+window.editProtokol = async function(id) {
+  try {
+    // Add cache-busting parameter
+    const response = await fetch(`/api/protokol/${id}?t=${Date.now()}`, {
+      cache: 'no-cache',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
+    if (!response.ok) throw new Error('Gagal mengambil data protokol');
+    
+    const protokol = await response.json();
+    
+    // Fill form
+    document.getElementById('editProtokolId').value = protokol.id;
+    document.getElementById('editAgendaDinas').value = protokol.agendaDinas || '';
+    document.getElementById('editTglKegiatan').value = protokol.tglKegiatan ? protokol.tglKegiatan.split('T')[0] : '';
+    document.getElementById('editNoSppd').value = protokol.noSppd || '';
+    document.getElementById('editChecklistKebutuhan').value = protokol.checklistKebutuhan || '';
+    document.getElementById('editMonitoringPelaksanaan').value = protokol.monitoringPelaksanaan || '';
+    
+    // Show current files
+    document.getElementById('currentDisposisi').textContent = protokol.uploadDisposisi ? `File saat ini: ${protokol.uploadDisposisi}` : 'Belum ada file';
+    document.getElementById('currentEtiket').textContent = protokol.uploadEtiket ? `File saat ini: ${protokol.uploadEtiket}` : 'Belum ada file';
+    document.getElementById('currentMateri').textContent = protokol.uploadMateri ? `File saat ini: ${protokol.uploadMateri}` : 'Belum ada file';
+    document.getElementById('currentDokumentasi').textContent = protokol.uploadDokumentasi ? `File saat ini: ${protokol.uploadDokumentasi}` : 'Belum ada file';
+    document.getElementById('currentLaporan').textContent = protokol.uploadLaporan ? `File saat ini: ${protokol.uploadLaporan}` : 'Belum ada file';
+    document.getElementById('currentSppdFinal').textContent = protokol.uploadSppdFinal ? `File saat ini: ${protokol.uploadSppdFinal}` : 'Belum ada file';
+    document.getElementById('currentBoardingPass').textContent = protokol.uploadBoardingPass ? `File saat ini: ${protokol.uploadBoardingPass}` : 'Belum ada file';
+    
+    // Show modal
+    new bootstrap.Modal(document.getElementById('editProtokolModal')).show();
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Gagal mengambil data protokol');
+  }
+};
+
+// Update Protokol
+window.updateProtokol = async function() {
+  try {
+    const form = document.getElementById('editProtokolForm');
+    const formData = new FormData(form);
+    const id = document.getElementById('editProtokolId').value;
+    
+    const response = await fetch(`/api/protokol/${id}`, {
+      method: 'PUT',
+      body: formData
+      // No Content-Type header
+    });
+    
+    if (response.ok) {
+      alert('Protokol berhasil diupdate!');
+      bootstrap.Modal.getInstance(document.getElementById('editProtokolModal')).hide();
+      // Force reload without cache
+      window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
+    } else {
+      const error = await response.json();
+      alert('Error: ' + (error.message || 'Gagal mengupdate protokol'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan saat mengupdate protokol');
+  }
+};
+
+// Delete Protokol
+window.deleteProtokol = async function(id) {
+  if (!confirm('Apakah Anda yakin ingin menghapus protokol ini?')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/api/protokol/${id}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      alert('Protokol berhasil dihapus!');
+      // Force reload without cache
+      window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
+    } else {
+      const error = await response.json();
+      alert('Error: ' + (error.message || 'Gagal menghapus protokol'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan saat menghapus protokol');
+  }
+};
+</script>

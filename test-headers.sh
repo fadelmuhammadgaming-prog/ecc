@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "=== Testing Cache Headers ==="
+echo ""
+echo "1. API Protokol Headers:"
+curl -sI http://localhost:3000/api/protokol | grep -i -E "cache|pragma|expires|etag"
+echo ""
+echo "2. Page Protokol Headers:"
+curl -sI http://localhost:3000/protokol | grep -i -E "cache|pragma|expires|etag"
+echo ""
+echo "Done!"

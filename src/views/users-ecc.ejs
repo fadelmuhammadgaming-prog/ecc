@@ -1,0 +1,391 @@
+<div class="page-header">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1><i class="bi bi-people-fill"></i> Manajemen Users</h1>
+      <p class="mb-0">Kelola pengguna sistem ECC</p>
+    </div>
+    <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addUserModal">
+      <i class="bi bi-plus-circle"></i> Tambah User
+    </button>
+  </div>
+</div>
+
+<!-- Role Statistics -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center">
+        <i class="bi bi-person-badge display-4 text-primary"></i>
+        <h4 class="mt-2"><%= usersList.filter(u => u.role === 'SEKRETARIS').length %></h4>
+        <p class="text-muted mb-0">Sekretaris</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center">
+        <i class="bi bi-person-check display-4 text-success"></i>
+        <h4 class="mt-2"><%= usersList.filter(u => u.role === 'PROTOKOLER').length %></h4>
+        <p class="text-muted mb-0">Protokoler</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center">
+        <i class="bi bi-person-fill display-4 text-warning"></i>
+        <h4 class="mt-2"><%= usersList.filter(u => u.role === 'DIREKSI').length %></h4>
+        <p class="text-muted mb-0">Direksi</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center">
+        <i class="bi bi-person-workspace display-4 text-info"></i>
+        <h4 class="mt-2"><%= usersList.filter(u => u.role === 'PA').length %></h4>
+        <p class="text-muted mb-0">Personal Assistant</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Users Table -->
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Nama Lengkap</th>
+            <th>Email</th>
+            <th>Divisi</th>
+            <th>Job Title</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (usersList && usersList.length > 0) { %>
+            <% usersList.forEach(user => { %>
+              <tr>
+                <td><strong><%= user.username %></strong></td>
+                <td><%= user.nama || '-' %></td>
+                <td><%= user.email || '-' %></td>
+                <td><%= user.divisi || '-' %></td>
+                <td><%= user.jobTitle || '-' %></td>
+                <td>
+                  <span class="badge <%= 
+                    user.role === 'SEKRETARIS' ? 'bg-primary' : 
+                    user.role === 'PROTOKOLER' ? 'bg-success' : 
+                    user.role === 'DIREKSI' ? 'bg-warning' : 
+                    user.role === 'PA' ? 'bg-info' : 'bg-secondary' 
+                  %>">
+                    <%= user.role %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge <%= user.isActive ? 'bg-success' : 'bg-secondary' %>">
+                    <%= user.isActive ? 'Active' : 'Inactive' %>
+                  </span>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="window.editUser(<%= user.id %>)" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="window.deleteUser(<%= user.id %>)" title="Hapus">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="8" class="text-center py-5">
+                <i class="bi bi-people display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Belum ada user</h5>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Tambah User Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addUserForm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-control" name="username" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control" name="password" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Nama Lengkap</label>
+              <input type="text" class="form-control" name="nama" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Divisi</label>
+              <input type="text" class="form-control" name="divisi">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Job Title</label>
+              <input type="text" class="form-control" name="jobTitle">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Role</label>
+              <select class="form-select" name="role" required>
+                <option value="">Pilih Role</option>
+                <option value="SEKRETARIS">Sekretaris</option>
+                <option value="PROTOKOLER">Protokoler</option>
+                <option value="DIREKSI">Direksi</option>
+                <option value="PA">Personal Assistant</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="isActive">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="window.saveUser()">
+          <i class="bi bi-save"></i> Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Edit User</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editUserForm">
+          <input type="hidden" id="editUserId" name="id">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-control" id="editUsername" name="username" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Password <small class="text-muted">(kosongkan jika tidak diubah)</small></label>
+              <input type="password" class="form-control" id="editPassword" name="password" placeholder="Biarkan kosong jika tidak ingin mengubah">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Nama Lengkap</label>
+              <input type="text" class="form-control" id="editNama" name="nama" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" id="editEmail" name="email" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Divisi</label>
+              <input type="text" class="form-control" id="editDivisi" name="divisi">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Job Title</label>
+              <input type="text" class="form-control" id="editJobTitle" name="jobTitle">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Role</label>
+              <select class="form-select" id="editRole" name="role" required>
+                <option value="">Pilih Role</option>
+                <option value="SEKRETARIS">Sekretaris</option>
+                <option value="PROTOKOLER">Protokoler</option>
+                <option value="DIREKSI">Direksi</option>
+                <option value="PA">Personal Assistant</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" id="editIsActive" name="isActive">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="window.updateUser()">
+          <i class="bi bi-save"></i> Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript Functions -->
+<script type="text/javascript">
+// Add User
+window.saveUser = async function() {
+  const form = document.getElementById('addUserForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  // Convert isActive to boolean
+  data.isActive = data.isActive === 'true';
+  
+  try {
+    const response = await fetch('/api/users', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data),
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('User berhasil ditambahkan!');
+      location.reload();
+    } else {
+      alert('Gagal menambahkan user: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Edit User - Load data and show modal
+window.editUser = async function(id) {
+  try {
+    const response = await fetch(`/api/users/${id}`, {
+      credentials: 'same-origin'
+    });
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      const user = result.data;
+      
+      // Fill form with user data
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUsername').value = user.username;
+      document.getElementById('editNama').value = user.nama || '';
+      document.getElementById('editEmail').value = user.email || '';
+      document.getElementById('editDivisi').value = user.divisi || '';
+      document.getElementById('editJobTitle').value = user.jobTitle || '';
+      document.getElementById('editRole').value = user.role;
+      document.getElementById('editIsActive').value = user.isActive ? 'true' : 'false';
+      
+      // Clear password field
+      document.getElementById('editPassword').value = '';
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+      modal.show();
+    } else {
+      alert('Gagal memuat data user: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Update User
+window.updateUser = async function() {
+  const form = document.getElementById('editUserForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  const userId = data.id;
+  
+  // Remove id from data
+  delete data.id;
+  
+  // Convert isActive to boolean
+  data.isActive = data.isActive === 'true';
+  
+  // Remove password if empty
+  if (!data.password || data.password.trim() === '') {
+    delete data.password;
+  }
+  
+  try {
+    const response = await fetch(`/api/users/${userId}`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data),
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('User berhasil diupdate!');
+      location.reload();
+    } else {
+      alert('Gagal mengupdate user: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Delete User
+window.deleteUser = async function(id) {
+  if (!confirm('Yakin ingin menghapus user ini? Tindakan ini tidak dapat dibatalkan!')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/api/users/${id}`, { 
+      method: 'DELETE',
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('User berhasil dihapus!');
+      location.reload();
+    } else {
+      alert('Gagal menghapus user: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+</script>

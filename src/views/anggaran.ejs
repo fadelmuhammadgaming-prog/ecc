@@ -1,0 +1,318 @@
+<div class="page-header">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1><i class="bi bi-cash-stack"></i> Monitor Anggaran</h1>
+      <p class="mb-0">Monitoring dan pelaporan anggaran perjalanan dinas</p>
+    </div>
+    <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addAnggaranModal">
+      <i class="bi bi-plus-circle"></i> Tambah Anggaran
+    </button>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <div class="card-body text-center">
+        <h6 class="text-uppercase mb-2" style="opacity: 0.9;">Total Pagu</h6>
+        <h2 class="mb-0">Rp <%= ((summary.totalPagu || 0) / 1000000000).toFixed(2) %> M</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+      <div class="card-body text-center">
+        <h6 class="text-uppercase mb-2" style="opacity: 0.9;">Total Realisasi</h6>
+        <h2 class="mb-0">Rp <%= ((summary.totalRealisasi || 0) / 1000000000).toFixed(2) %> M</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+      <div class="card-body text-center">
+        <h6 class="text-uppercase mb-2" style="opacity: 0.9;">Sisa Anggaran</h6>
+        <h2 class="mb-0">Rp <%= ((summary.totalSisa || 0) / 1000000000).toFixed(2) %> M</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Anggaran Table -->
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <h5 class="card-title mb-4">Detail Anggaran per Mata Anggaran</h5>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Mata Anggaran</th>
+            <th>Tahun</th>
+            <th class="text-end">Pagu (Rp)</th>
+            <th class="text-end">Realisasi (Rp)</th>
+            <th class="text-end">Sisa (Rp)</th>
+            <th class="text-center">Progress</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (anggaranList && anggaranList.length > 0) { %>
+            <% anggaranList.forEach(item => { %>
+              <% 
+                const pagu = parseFloat(item.pagu) || 0;
+                const realisasi = parseFloat(item.realisasi) || 0;
+                const sisa = parseFloat(item.sisa) || 0;
+                const percentage = pagu > 0 ? ((realisasi / pagu) * 100).toFixed(1) : 0;
+                const statusColor = percentage > 90 ? 'danger' : percentage > 70 ? 'warning' : 'success';
+              %>
+              <tr>
+                <td><strong><%= item.mataAnggaran %></strong></td>
+                <td><%= item.tahunAnggaran %></td>
+                <td class="text-end"><%= pagu.toLocaleString('id-ID') %></td>
+                <td class="text-end"><%= realisasi.toLocaleString('id-ID') %></td>
+                <td class="text-end"><%= sisa.toLocaleString('id-ID') %></td>
+                <td>
+                  <div class="progress" style="height: 25px;">
+                    <div class="progress-bar bg-<%= statusColor %>" 
+                         style="width: <%= percentage %>%"
+                         role="progressbar">
+                      <%= percentage %>%
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="window.editAnggaran(<%= item.id %>)" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="window.deleteAnggaran(<%= item.id %>)" title="Hapus">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <i class="bi bi-cash display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Belum ada data anggaran</h5>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Anggaran Modal -->
+<div class="modal fade" id="addAnggaranModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Tambah Anggaran Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addAnggaranForm">
+          <div class="mb-3">
+            <label class="form-label">Mata Anggaran</label>
+            <input type="text" class="form-control" name="mataAnggaran" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Pagu (Rp)</label>
+            <input type="number" class="form-control" name="pagu" step="0.01" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Realisasi (Rp)</label>
+            <input type="number" class="form-control" name="realisasi" step="0.01" value="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tahun Anggaran</label>
+            <input type="number" class="form-control" name="tahunAnggaran" value="2025" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="window.saveAnggaran()">
+          <i class="bi bi-save"></i> Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Anggaran Modal -->
+<div class="modal fade" id="editAnggaranModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Edit Anggaran</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editAnggaranForm">
+          <input type="hidden" id="editAnggaranId" name="id">
+          <div class="mb-3">
+            <label class="form-label">Mata Anggaran</label>
+            <input type="text" class="form-control" id="editMataAnggaran" name="mataAnggaran" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Pagu (Rp)</label>
+            <input type="number" class="form-control" id="editPagu" name="pagu" step="0.01" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Realisasi (Rp)</label>
+            <input type="number" class="form-control" id="editRealisasi" name="realisasi" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tahun Anggaran</label>
+            <input type="number" class="form-control" id="editTahunAnggaran" name="tahunAnggaran" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="window.updateAnggaran()">
+          <i class="bi bi-save"></i> Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+// Add Anggaran
+window.saveAnggaran = async function() {
+  const form = document.getElementById('addAnggaranForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  // Convert to numbers
+  data.pagu = parseFloat(data.pagu);
+  data.realisasi = parseFloat(data.realisasi);
+  data.tahunAnggaran = parseInt(data.tahunAnggaran);
+  
+  try {
+    const response = await fetch('/api/anggaran', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data),
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('Anggaran berhasil ditambahkan!');
+      location.reload();
+    } else {
+      alert('Gagal menambahkan anggaran: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Edit Anggaran - Load data and show modal
+window.editAnggaran = async function(id) {
+  try {
+    const response = await fetch(`/api/anggaran/${id}`, {
+      credentials: 'same-origin'
+    });
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      const item = result.data;
+      
+      // Fill form with data
+      document.getElementById('editAnggaranId').value = item.id;
+      document.getElementById('editMataAnggaran').value = item.mataAnggaran || '';
+      document.getElementById('editPagu').value = item.pagu || 0;
+      document.getElementById('editRealisasi').value = item.realisasi || 0;
+      document.getElementById('editTahunAnggaran').value = item.tahunAnggaran || new Date().getFullYear();
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('editAnggaranModal'));
+      modal.show();
+    } else {
+      alert('Gagal memuat data anggaran: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Update Anggaran
+window.updateAnggaran = async function() {
+  const form = document.getElementById('editAnggaranForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  const id = data.id;
+  
+  // Remove id from data
+  delete data.id;
+  
+  // Convert to numbers
+  data.pagu = parseFloat(data.pagu);
+  data.realisasi = parseFloat(data.realisasi);
+  data.tahunAnggaran = parseInt(data.tahunAnggaran);
+  
+  try {
+    const response = await fetch(`/api/anggaran/${id}`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data),
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('Anggaran berhasil diupdate!');
+      location.reload();
+    } else {
+      alert('Gagal mengupdate anggaran: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Delete Anggaran
+window.deleteAnggaran = async function(id) {
+  if (!confirm('Yakin ingin menghapus anggaran ini? Tindakan ini tidak dapat dibatalkan!')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/api/anggaran/${id}`, { 
+      method: 'DELETE',
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('Anggaran berhasil dihapus!');
+      location.reload();
+    } else {
+      alert('Gagal menghapus anggaran: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+</script>

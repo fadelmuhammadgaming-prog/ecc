@@ -1,0 +1,377 @@
+<div class="page-header">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1><i class="bi bi-envelope-fill"></i> Manajemen Surat</h1>
+      <p class="mb-0">Kelola surat masuk dan keluar</p>
+    </div>
+    <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addSuratModal">
+      <i class="bi bi-plus-circle"></i> Tambah Surat
+    </button>
+  </div>
+</div>
+
+<!-- Statistics -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center">
+        <i class="bi bi-envelope display-4 text-primary"></i>
+        <h4 class="mt-2"><%= suratList.length %></h4>
+        <p class="text-muted mb-0">Total Surat</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center">
+        <i class="bi bi-clock-history display-4 text-warning"></i>
+        <h4 class="mt-2"><%= suratList.filter(s => s.statusSurat === 'ON PROGRESS').length %></h4>
+        <p class="text-muted mb-0">On Progress</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center">
+        <i class="bi bi-check-circle display-4 text-success"></i>
+        <h4 class="mt-2"><%= suratList.filter(s => s.statusSurat === 'DONE').length %></h4>
+        <p class="text-muted mb-0">Done</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center">
+        <i class="bi bi-exclamation-triangle display-4 text-danger"></i>
+        <h4 class="mt-2"><%= suratList.filter(s => s.urgensi === 'PENTING').length %></h4>
+        <p class="text-muted mb-0">Penting</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Surat Table -->
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID Surat</th>
+            <th>Jenis Surat</th>
+            <th>No. Memo</th>
+            <th>User</th>
+            <th>Urgensi</th>
+            <th>Status</th>
+            <th>Tanggal</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (suratList && suratList.length > 0) { %>
+            <% suratList.forEach(item => { %>
+              <tr>
+                <td><strong><%= item.idSurat %></strong></td>
+                <td><%= item.jenisSurat %></td>
+                <td><%= item.noMemoSurat %></td>
+                <td><%= item.namaUser || '-' %></td>
+                <td>
+                  <span class="badge <%= item.urgensi === 'PENTING' ? 'bg-danger' : item.urgensi === 'MENDESAK' ? 'bg-warning' : 'bg-secondary' %>">
+                    <%= item.urgensi %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge <%= item.statusSurat === 'DONE' ? 'bg-success' : item.statusSurat === 'ON PROGRESS' ? 'bg-warning' : 'bg-secondary' %>">
+                    <%= item.statusSurat %>
+                  </span>
+                </td>
+                <td><%= new Date(item.tglRekam).toLocaleDateString('id-ID') %></td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <% if (item.uploadSurat) { %>
+                      <a href="<%= item.uploadSurat %>" class="btn btn-outline-info" target="_blank" title="Lihat File">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                      </a>
+                    <% } %>
+                    <button class="btn btn-outline-primary" onclick="window.editSurat(<%= item.id %>)" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="window.deleteSurat(<%= item.id %>)" title="Hapus">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="8" class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Belum ada data surat</h5>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Surat Modal -->
+<div class="modal fade" id="addSuratModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Tambah Surat Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addSuratForm" enctype="multipart/form-data">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ID Surat</label>
+              <input type="text" class="form-control" name="idSurat" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Jenis Surat</label>
+              <select class="form-select" name="jenisSurat" required>
+                <option value="">Pilih Jenis</option>
+                <option value="BERITA ACARA">Berita Acara</option>
+                <option value="BERITA ACARA (EXTERNAL)">Berita Acara (External)</option>
+                <option value="MEMO EXTERNAL">Memo External</option>
+                <option value="MEMO INTERNAL">Memo Internal</option>
+                <option value="SURAT BIASA">Surat Biasa</option>
+                <option value="SURAT RAHASIA">Surat Rahasia</option>
+                <option value="SURAT RAHASIA PERSONAL">Surat Rahasia Personal</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">No. Memo Surat</label>
+              <input type="text" class="form-control" name="noMemoSurat" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Urgensi</label>
+              <select class="form-select" name="urgensi" required>
+                <option value="BIASA" selected>Biasa</option>
+                <option value="MENDESAK">Mendesak</option>
+                <option value="PENTING">Penting</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="statusSurat" required>
+                <option value="BELUM" selected>Belum</option>
+                <option value="ON PROGRESS">On Progress</option>
+                <option value="DONE">Done</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Upload File Surat <small class="text-muted">(PDF, DOC, DOCX, JPG, PNG - Max 10MB)</small></label>
+              <input type="file" class="form-control" name="uploadSurat" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+              <small class="text-muted">File akan disimpan di folder uploads</small>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="window.saveSurat()">
+          <i class="bi bi-save"></i> Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Surat Modal -->
+<div class="modal fade" id="editSuratModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Edit Surat</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editSuratForm" enctype="multipart/form-data">
+          <input type="hidden" id="editSuratId" name="id">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ID Surat</label>
+              <input type="text" class="form-control" id="editIdSurat" name="idSurat" required readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Jenis Surat</label>
+              <select class="form-select" id="editJenisSurat" name="jenisSurat" required>
+                <option value="">Pilih Jenis</option>
+                <option value="BERITA ACARA">Berita Acara</option>
+                <option value="BERITA ACARA (EXTERNAL)">Berita Acara (External)</option>
+                <option value="MEMO EXTERNAL">Memo External</option>
+                <option value="MEMO INTERNAL">Memo Internal</option>
+                <option value="SURAT BIASA">Surat Biasa</option>
+                <option value="SURAT RAHASIA">Surat Rahasia</option>
+                <option value="SURAT RAHASIA PERSONAL">Surat Rahasia Personal</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">No. Memo Surat</label>
+              <input type="text" class="form-control" id="editNoMemoSurat" name="noMemoSurat">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Urgensi</label>
+              <select class="form-select" id="editUrgensi" name="urgensi">
+                <option value="BIASA">Biasa</option>
+                <option value="MENDESAK">Mendesak</option>
+                <option value="PENTING">Penting</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" id="editStatusSurat" name="statusSurat">
+                <option value="BELUM">Belum</option>
+                <option value="ON PROGRESS">On Progress</option>
+                <option value="DONE">Done</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Upload File Baru <small class="text-muted">(Opsional - Kosongkan jika tidak ingin ubah)</small></label>
+              <input type="file" class="form-control" id="editUploadSurat" name="uploadSurat" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+              <small id="currentFile" class="text-muted"></small>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="window.updateSurat()">
+          <i class="bi bi-save"></i> Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+// Add Surat with file upload
+window.saveSurat = async function() {
+  const form = document.getElementById('addSuratForm');
+  const formData = new FormData(form);
+  
+  try {
+    const response = await fetch('/api/surat', {
+      method: 'POST',
+      body: formData, // Send as FormData for file upload
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('Surat berhasil ditambahkan!');
+      location.reload();
+    } else {
+      alert('Gagal menambahkan surat: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Edit Surat - Load data and show modal
+window.editSurat = async function(id) {
+  try {
+    const response = await fetch(`/api/surat/${id}`, {
+      credentials: 'same-origin'
+    });
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      const item = result.data;
+      
+      // Fill form with data
+      document.getElementById('editSuratId').value = item.id;
+      document.getElementById('editIdSurat').value = item.idSurat || '';
+      document.getElementById('editJenisSurat').value = item.jenisSurat || '';
+      document.getElementById('editNoMemoSurat').value = item.noMemoSurat || '';
+      document.getElementById('editUrgensi').value = item.urgensi || 'BIASA';
+      document.getElementById('editStatusSurat').value = item.statusSurat || 'BELUM';
+      
+      // Show current file info
+      const currentFileEl = document.getElementById('currentFile');
+      if (item.uploadSurat) {
+        currentFileEl.textContent = `File saat ini: ${item.uploadSurat}`;
+      } else {
+        currentFileEl.textContent = 'Tidak ada file';
+      }
+      
+      // Clear file input
+      document.getElementById('editUploadSurat').value = '';
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('editSuratModal'));
+      modal.show();
+    } else {
+      alert('Gagal memuat data surat: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Update Surat with optional file upload
+window.updateSurat = async function() {
+  const form = document.getElementById('editSuratForm');
+  const formData = new FormData(form);
+  const id = formData.get('id');
+  
+  // Remove id from formData
+  formData.delete('id');
+  
+  try {
+    const response = await fetch(`/api/surat/${id}`, {
+      method: 'PUT',
+      body: formData, // Send as FormData for file upload
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('Surat berhasil diupdate!');
+      location.reload();
+    } else {
+      alert('Gagal mengupdate surat: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Delete Surat
+window.deleteSurat = async function(id) {
+  if (!confirm('Yakin ingin menghapus surat ini? Tindakan ini tidak dapat dibatalkan!')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/api/surat/${id}`, { 
+      method: 'DELETE',
+      credentials: 'same-origin'
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      alert('Surat berhasil dihapus!');
+      location.reload();
+    } else {
+      alert('Gagal menghapus surat: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+</script>
