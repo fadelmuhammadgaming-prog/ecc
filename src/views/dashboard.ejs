@@ -22,18 +22,18 @@
   </div>
   
   <div class="col-md-3">
-    <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-      <div class="icon"><i class="bi bi-person-lines-fill"></i></div>
-      <h3><%= stats.totalContact || 0 %></h3>
-      <p>Total Kontak</p>
+    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+      <div class="icon"><i class="bi bi-calendar-check"></i></div>
+      <h3><%= stats.totalAgendaOnSchedule || 0 %></h3>
+      <p>Agenda On Schedule</p>
     </div>
   </div>
   
   <div class="col-md-3">
-    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-      <div class="icon"><i class="bi bi-people-fill"></i></div>
-      <h3><%= stats.totalUsers || 0 %></h3>
-      <p>Total Users</p>
+    <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+      <div class="icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <h3><%= stats.totalSuratMendesak || 0 %></h3>
+      <p>Surat Mendesak</p>
     </div>
   </div>
 </div>
@@ -148,18 +148,18 @@
                   <div class="flex-grow-1">
                     <div class="d-flex align-items-center mb-2">
                       <span class="badge bg-primary me-2">
-                        <i class="bi bi-file-text"></i> <%= item.jenis_surat %>
+                        <i class="bi bi-file-text"></i> <%= item.jenisSurat || '-' %>
                       </span>
-                      <span class="badge <%= item.urgensi === 'URGENT' ? 'bg-danger' : item.urgensi === 'HIGH' ? 'bg-warning' : 'bg-info' %> me-2">
-                        <%= item.urgensi %>
+                      <span class="badge <%= item.urgensi === 'MENDESAK' ? 'bg-danger' : item.urgensi === 'PENTING' ? 'bg-warning' : 'bg-info' %> me-2">
+                        <%= item.urgensi || 'BIASA' %>
                       </span>
-                      <span class="badge <%= item.status_surat === 'APPROVED' ? 'bg-success' : item.status_surat === 'PENDING' ? 'bg-warning' : 'bg-secondary' %>">
-                        <%= item.status_surat %>
+                      <span class="badge <%= item.statusSurat === 'DONE' ? 'bg-success' : item.statusSurat === 'ON PROGRESS' ? 'bg-warning' : 'bg-secondary' %>">
+                        <%= item.statusSurat || 'BELUM' %>
                       </span>
                     </div>
                     <h6 class="mb-1">
                       <i class="bi bi-hash text-muted"></i> 
-                      <strong><%= item.no_memo_surat %></strong>
+                      <strong><%= item.noMemoSurat || '-' %></strong>
                     </h6>
                     <small class="text-muted">
                       <i class="bi bi-calendar3"></i> 

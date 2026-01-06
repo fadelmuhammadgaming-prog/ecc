@@ -46,8 +46,8 @@ router.get('/', async (req, res) => {
     const stats = {
       totalAgenda: await db.select({ count: sql`COUNT(*)` }).from(agenda).then(r => Number(r[0].count) || 0),
       totalSurat: await db.select({ count: sql`COUNT(*)` }).from(surat).then(r => Number(r[0].count) || 0),
-      totalContact: await db.select({ count: sql`COUNT(*)` }).from(contact).then(r => Number(r[0].count) || 0),
-      totalUsers: await db.select({ count: sql`COUNT(*)` }).from(users).then(r => Number(r[0].count) || 0),
+      totalAgendaOnSchedule: await db.select({ count: sql`COUNT(*)` }).from(agenda).where(sql`${agenda.status} = 'ON SCHEDULE'`).then(r => Number(r[0].count) || 0),
+      totalSuratMendesak: await db.select({ count: sql`COUNT(*)` }).from(surat).where(sql`${surat.urgensi} = 'MENDESAK'`).then(r => Number(r[0].count) || 0),
       totalPagu: await db.select({ sum: sql`COALESCE(SUM(${anggaran.pagu}), 0)` }).from(anggaran).then(r => Number(r[0].sum) || 0),
       totalRealisasi: await db.select({ sum: sql`COALESCE(SUM(${anggaran.realisasi}), 0)` }).from(anggaran).then(r => Number(r[0].sum) || 0),
       totalSisa: await db.select({ sum: sql`COALESCE(SUM(${anggaran.sisa}), 0)` }).from(anggaran).then(r => Number(r[0].sum) || 0),
@@ -70,7 +70,17 @@ router.get('/', async (req, res) => {
     console.error('Dashboard error:', error);
     res.render('dashboard', { 
       title: 'Dashboard',
-      stats: { totalAgenda: 0, totalSurat: 0, totalContact: 0, totalUsers: 0, totalPagu: 0, totalRealisasi: 0, totalSisa: 0 },
+      stats: { 
+        totalAgenda: 0, 
+        totalSurat: 0, 
+        totalAgendaOnSchedule: 0, 
+        totalSuratMendesak: 0, 
+        totalPagu: 0, 
+        totalRealisasi: 0, 
+        totalSisa: 0,
+        persenTerpakai: 0,
+        persenSisa: 0
+      },
       agendaList: [],
       suratList: [],
     });
