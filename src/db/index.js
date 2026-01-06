@@ -8,8 +8,12 @@ dotenv.config();
 const { Pool } = pg;
 
 // Create PostgreSQL connection pool
+// Support both local development and production (Render/Railway)
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' 
+    ? { rejectUnauthorized: false } 
+    : false,
 });
 
 // Create Drizzle instance
